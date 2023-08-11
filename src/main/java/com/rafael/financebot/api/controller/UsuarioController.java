@@ -95,10 +95,18 @@ public class UsuarioController {
                 return ResponseEntity
                         .ok(contasVencidas);
             }
+            case "payed" -> {
+                List<Conta> contasPagas = contasMensais.stream()
+                        .filter(Conta::isPayed)
+                        .toList();
+
+                return ResponseEntity
+                        .ok(contasPagas);
+            }
             default -> {
                 return ResponseEntity
                         .badRequest()
-                        .body("Parâmetro incorreto, parâmetros aceitos: OPEN/OVERDUE.");
+                        .body("Parâmetro incorreto, parâmetros aceitos: open/overdue/payed.");
             }
         }
     }
