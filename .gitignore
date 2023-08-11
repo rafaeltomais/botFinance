@@ -2,8 +2,9 @@ HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
-!**/src/main/**/target/
-!**/src/test/resources
+!**/src/main/resources/application.properties
+!**/src/main/resources/import.sql
+!**/src/test/**/target/
 
 
 ### STS ###
