@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -71,6 +69,13 @@ public class UsuarioController {
 
         List<Conta> contasMensais = usuarioOptional.get().getContasMensais();
         contasMensais.sort(Comparator.comparingInt(Conta::getDueDay));
+        for (Conta cadaConta : contasMensais) {
+            LocalDate dataAtual = LocalDate.now();
+            int diaDoMes = dataAtual.getDayOfMonth();
+            if (cadaConta.getDueDay() < diaDoMes && !cadaConta.isPayed()) {
+                cadaConta.setOverdue(true);
+            }
+        }
 
         if(null == status) {
             return ResponseEntity
@@ -86,11 +91,8 @@ public class UsuarioController {
                         .ok(contasAberto);
             }
             case "overdue" -> {
-                LocalDate dataAtual = LocalDate.now();
-                int diaDoMes = dataAtual.getDayOfMonth();
-
                 List<Conta> contasVencidas = contasMensais.stream()
-                        .filter(conta -> conta.getDueDay() < diaDoMes && !conta.isPayed())
+                        .filter(Conta::isOverdue)
                         .toList();
                 return ResponseEntity
                         .ok(contasVencidas);
