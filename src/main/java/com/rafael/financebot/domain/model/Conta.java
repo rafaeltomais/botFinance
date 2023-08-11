@@ -29,10 +29,4 @@ public class Conta implements Serializable {
     @Column(nullable = false)
     private boolean payed;
 
-    @Column(nullable = false)
-    private boolean dueOpen;
-
-    @Column(nullable = false)
-    private boolean overdue;
-
 }

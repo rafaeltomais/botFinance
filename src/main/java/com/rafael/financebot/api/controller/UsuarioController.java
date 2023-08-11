@@ -15,8 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -55,7 +59,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> listarContasDoUsuario(@PathVariable Long userId) {
+    public ResponseEntity<?> listarContasUsuario(@PathVariable Long userId,
+                                                  @RequestParam(required = false) String status) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(userId);
 
         if(usuarioOptional.isEmpty()) {
@@ -65,9 +70,37 @@ public class UsuarioController {
         }
 
         List<Conta> contasMensais = usuarioOptional.get().getContasMensais();
+        contasMensais.sort(Comparator.comparingInt(Conta::getDueDay));
 
-        return ResponseEntity
-                .ok(contasMensais);
+        if(null == status) {
+            return ResponseEntity
+                    .ok(contasMensais);
+        }
+
+        switch (status) {
+            case "open" -> {
+                List<Conta> contasAberto = contasMensais.stream()
+                        .filter(conta -> !conta.isPayed())
+                        .toList();
+                return ResponseEntity
+                        .ok(contasAberto);
+            }
+            case "overdue" -> {
+                LocalDate dataAtual = LocalDate.now();
+                int diaDoMes = dataAtual.getDayOfMonth();
+
+                List<Conta> contasVencidas = contasMensais.stream()
+                        .filter(conta -> conta.getDueDay() < diaDoMes && !conta.isPayed())
+                        .toList();
+                return ResponseEntity
+                        .ok(contasVencidas);
+            }
+            default -> {
+                return ResponseEntity
+                        .badRequest()
+                        .body("Parâmetro incorreto, parâmetros aceitos: OPEN/OVERDUE.");
+            }
+        }
     }
 
     @PostMapping("/{userId}")
@@ -174,9 +207,9 @@ public class UsuarioController {
         List<Conta> contaList = usuarioOptional.get().getContasMensais();
 
         for(Conta cadaConta : contaList) {
-            cadaConta.setDueOpen(true);
+//            cadaConta.setDueOpen(true);
             cadaConta.setPayed(false);
-            cadaConta.setOverdue(false);
+//            cadaConta.setOverdue(false);
 
             try{
                 contaService.cadastrarConta(cadaConta);

@@ -13,9 +13,6 @@ public class ContaService {
     private ContaRepository contaRepository;
 
     public Conta cadastrarConta(Conta conta){
-        if(conta.isPayed() && conta.isDueOpen()) {
-            throw new ConflitoStatus("Uma conta não pode estar paga e aberta ao mesmo tempo.");
-        }
         return contaRepository.save(conta);
     }
 
