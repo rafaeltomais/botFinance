@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class Conta implements Serializable {
+public class Conta {
 
     @EqualsAndHashCode.Include
     @Id

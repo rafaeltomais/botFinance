@@ -74,6 +74,7 @@ public class UsuarioController {
             int diaDoMes = dataAtual.getDayOfMonth();
             if (cadaConta.getDueDay() < diaDoMes && !cadaConta.isPayed()) {
                 cadaConta.setOverdue(true);
+                contaService.cadastrarConta(cadaConta);
             }
         }
 
@@ -112,6 +113,22 @@ public class UsuarioController {
             }
         }
     }
+//
+//    @GetMapping("/{userId}/{dueId}")
+//    public ResponseEntity<?> buscarConta(@PathVariable Long userId,
+//                                         @PathVariable Long dueId) {
+//        Optional<Usuario> usuarioOptional = usuarioRepository.findById(userId);
+//        Optional<Conta> contaOptional = contaRepository.findById(dueId);
+//
+//        if(usuarioOptional.isEmpty() || contaOptional.isEmpty()) {
+//            return ResponseEntity
+//                    .notFound()
+//                    .build();
+//        }
+//
+//        return ResponseEntity
+//                .ok(contaOptional.get());
+//    }
 
     @PostMapping("/{userId}")
     public ResponseEntity<?> cadastrarConta(@PathVariable Long userId,
@@ -149,11 +166,14 @@ public class UsuarioController {
                     .notFound()
                     .build();
         }
-
-        BeanUtils.copyProperties(conta, contaOptional.get(), "id" );
+        Conta contaEncontrada = contaOptional.get();
+        BeanUtils.copyProperties(conta, contaEncontrada, "id" );
 
         try{
-            Conta contaNova = usuarioService.cadastrarContaService(usuarioOptional.get().getId(), contaOptional.get());
+            if(contaEncontrada.isPayed() && contaEncontrada.isOverdue()) {
+                contaEncontrada.setOverdue(false);
+            }
+            Conta contaNova = usuarioService.cadastrarContaService(usuarioOptional.get().getId(), contaEncontrada);
 
             return ResponseEntity
                     .ok(contaNova);
@@ -217,9 +237,7 @@ public class UsuarioController {
         List<Conta> contaList = usuarioOptional.get().getContasMensais();
 
         for(Conta cadaConta : contaList) {
-//            cadaConta.setDueOpen(true);
             cadaConta.setPayed(false);
-//            cadaConta.setOverdue(false);
 
             try{
                 contaService.cadastrarConta(cadaConta);

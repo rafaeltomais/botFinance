@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class Usuario implements Serializable {
+public class Usuario  {
 
     @EqualsAndHashCode.Include
     @Id
@@ -27,7 +27,7 @@ public class Usuario implements Serializable {
     private String password;
 
     @Column
-    private boolean shouldNotificate = false;
+    private int shouldNotificate = 0;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id")
