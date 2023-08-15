@@ -19,7 +19,7 @@ public class VerificaVencimentoCron {
     @Autowired
     UsuarioController usuarioController;
 
-    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     public void verificaVencimento() {
         LocalDate dataAtual = LocalDate.now();
         int diaDoMes = dataAtual.getDayOfMonth();
@@ -32,7 +32,7 @@ public class VerificaVencimentoCron {
             List<Conta> contaList = cadaUsuario.getContasMensais();
 
             if(cadaUsuario.isShouldNotificate()) {
-                StringBuilder mensagemVencimento = new StringBuilder("🚨🚨 Um alerta para você de vencimento! 🚨🚨\n\n");
+                StringBuilder mensagemVencimento = new StringBuilder("🚨 Um alerta para você de vencimento! 🚨\n\n");
                 int quantidadeContaAberto = 0;
 
                 for (Conta cadaConta : contaList) {
