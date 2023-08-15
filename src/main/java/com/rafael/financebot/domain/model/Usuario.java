@@ -28,7 +28,7 @@ public class Usuario  {
     @Column
     private boolean shouldNotificate = false;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id")
     private List<Conta> contasMensais;
 
