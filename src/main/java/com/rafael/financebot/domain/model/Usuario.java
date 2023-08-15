@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -27,7 +26,7 @@ public class Usuario  {
     private String password;
 
     @Column
-    private int shouldNotificate = 0;
+    private boolean shouldNotificate = false;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "usuario_id")

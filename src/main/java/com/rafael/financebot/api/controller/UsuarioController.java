@@ -3,6 +3,7 @@ package com.rafael.financebot.api.controller;
 import com.rafael.financebot.domain.exception.ConflitoStatus;
 import com.rafael.financebot.domain.exception.EntidadeNaoEncontrada;
 import com.rafael.financebot.domain.exception.PersistenciaDados;
+import com.rafael.financebot.domain.exception.ValorInvalido;
 import com.rafael.financebot.domain.model.Conta;
 import com.rafael.financebot.domain.model.Usuario;
 import com.rafael.financebot.domain.repository.ContaRepository;
@@ -69,13 +70,9 @@ public class UsuarioController {
 
         List<Conta> contasMensais = usuarioOptional.get().getContasMensais();
         contasMensais.sort(Comparator.comparingInt(Conta::getDueDay));
+
         for (Conta cadaConta : contasMensais) {
-            LocalDate dataAtual = LocalDate.now();
-            int diaDoMes = dataAtual.getDayOfMonth();
-            if (cadaConta.getDueDay() < diaDoMes && !cadaConta.isPayed()) {
-                cadaConta.setOverdue(true);
-                contaService.cadastrarConta(cadaConta);
-            }
+            contaService.cadastrarConta(cadaConta);
         }
 
         if(null == status) {
@@ -113,22 +110,6 @@ public class UsuarioController {
             }
         }
     }
-//
-//    @GetMapping("/{userId}/{dueId}")
-//    public ResponseEntity<?> buscarConta(@PathVariable Long userId,
-//                                         @PathVariable Long dueId) {
-//        Optional<Usuario> usuarioOptional = usuarioRepository.findById(userId);
-//        Optional<Conta> contaOptional = contaRepository.findById(dueId);
-//
-//        if(usuarioOptional.isEmpty() || contaOptional.isEmpty()) {
-//            return ResponseEntity
-//                    .notFound()
-//                    .build();
-//        }
-//
-//        return ResponseEntity
-//                .ok(contaOptional.get());
-//    }
 
     @PostMapping("/{userId}")
     public ResponseEntity<?> cadastrarConta(@PathVariable Long userId,
@@ -139,7 +120,7 @@ public class UsuarioController {
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(contaCriada);
-        }catch (PersistenciaDados e) {
+        }catch (PersistenciaDados | ValorInvalido e) {
             return ResponseEntity
                     .badRequest()
                     .body(e.getMessage());
@@ -170,9 +151,6 @@ public class UsuarioController {
         BeanUtils.copyProperties(conta, contaEncontrada, "id" );
 
         try{
-            if(contaEncontrada.isPayed() && contaEncontrada.isOverdue()) {
-                contaEncontrada.setOverdue(false);
-            }
             Conta contaNova = usuarioService.cadastrarContaService(usuarioOptional.get().getId(), contaEncontrada);
 
             return ResponseEntity
