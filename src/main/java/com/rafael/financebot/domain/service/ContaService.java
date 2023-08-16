@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Service
 public class ContaService {
@@ -19,8 +21,9 @@ public class ContaService {
             throw new ValorInvalido("Dia de vencimento deve ser de 1 a 31.");
         }
 
-        LocalDate dataAtual = LocalDate.now();
-        int diaDoMes = dataAtual.getDayOfMonth();
+        ZoneId brazilZone = ZoneId.of("America/Sao_Paulo");
+        ZonedDateTime brazilDateTime = ZonedDateTime.now(brazilZone);
+        int diaDoMes = brazilDateTime.getDayOfMonth();
 
         conta.setOverdue((diaDoMes > conta.getDueDay()) && !conta.isPayed());
 
