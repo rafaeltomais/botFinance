@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Data
@@ -27,8 +29,16 @@ public class Usuario {
     @Column
     private boolean shouldNotificate = false;
 
+    @Column
+    private ZonedDateTime createdAt;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id")
     private List<Conta> contasMensais;
+
+    public Usuario() {
+        ZoneId brazilZone = ZoneId.of("America/Sao_Paulo");
+        this.createdAt = ZonedDateTime.now(brazilZone);
+    }
 
 }

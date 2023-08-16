@@ -19,7 +19,6 @@ public class ContaController {
     @Autowired
     private ContaRepository contaRepository;
 
-
     @GetMapping
     public List<Conta> listar() {
         return contaRepository.findAll();
