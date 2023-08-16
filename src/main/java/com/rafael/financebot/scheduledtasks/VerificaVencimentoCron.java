@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -29,7 +30,9 @@ public class VerificaVencimentoCron {
         for(Usuario cadaUsuario : usuarioList) {
             Long identificador = cadaUsuario.getId();
             String chatId = Long.toString(identificador);
+
             List<Conta> contaList = cadaUsuario.getContasMensais();
+            contaList.sort(Comparator.comparingInt(Conta::getDueDay));
 
             if(cadaUsuario.isShouldNotificate()) {
                 StringBuilder mensagemVencimento = new StringBuilder("🚨 Um alerta de vencimento! 🚨\n\n");
