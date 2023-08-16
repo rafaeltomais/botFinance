@@ -32,19 +32,33 @@ public class VerificaVencimentoCron {
             List<Conta> contaList = cadaUsuario.getContasMensais();
 
             if(cadaUsuario.isShouldNotificate()) {
-                StringBuilder mensagemVencimento = new StringBuilder("🚨 Um alerta para você de vencimento! 🚨\n\n");
+                StringBuilder mensagemVencimento = new StringBuilder("🚨 Um alerta de vencimento! 🚨\n\n");
                 int quantidadeContaAberto = 0;
 
                 for (Conta cadaConta : contaList) {
-                    int diaVencimento = cadaConta.getDueDay();
                     String descricaoConta = cadaConta.getDescription();
+                    int diaVencimento = cadaConta.getDueDay();
+
                     boolean contaEmAberto = !cadaConta.isPayed();
+                    boolean contaVencida = cadaConta.isOverdue();
+
                     boolean isDiaVencimento = (diaDoMes) == diaVencimento;
                     boolean isAmanhaVencimento = (diaDoMes + 1) == diaVencimento;
+                    boolean isVencidaOntem = (diaDoMes - 1) == diaVencimento;
 
-                    if ((isDiaVencimento || isAmanhaVencimento) && contaEmAberto) {
-                        quantidadeContaAberto += 1;
-                        mensagemVencimento.append(String.format("Conta '%s' vence dia %d\n", descricaoConta, diaVencimento));
+                    if(contaEmAberto) {
+                        if(isVencidaOntem && contaVencida) {
+                            quantidadeContaAberto += 1;
+                            mensagemVencimento.append(String.format("Conta '%s' vencida ontem.\n", descricaoConta));
+                        }
+                        if(isDiaVencimento) {
+                            quantidadeContaAberto += 1;
+                            mensagemVencimento.append(String.format("Conta '%s' vence hoje.\n", descricaoConta));
+                        }
+                        if(isAmanhaVencimento) {
+                            quantidadeContaAberto += 1;
+                            mensagemVencimento.append(String.format("Conta '%s' vence amanhã.\n", descricaoConta));
+                        }
                     }
                 }
 

@@ -12,11 +12,11 @@ import com.rafael.financebot.domain.service.ContaService;
 import com.rafael.financebot.domain.service.UsuarioService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.config.RepositoryNameSpaceHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +57,32 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("/{userId}")
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> alterarUsuario(@PathVariable Long userId,
+                                            @RequestBody Usuario usuario) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(userId);
+
+        if(usuarioOptional.isEmpty()) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        Usuario usuarioEncontrado = usuarioOptional.get();
+        BeanUtils.copyProperties(usuario, usuarioEncontrado, "id");
+
+        try {
+            Usuario usuarioNovo = usuarioService.cadastrarContato(usuarioEncontrado);
+
+            return ResponseEntity.ok(usuarioNovo);
+        }catch (PersistenciaDados e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/contas/{userId}")
     public ResponseEntity<?> listarContasUsuario(@PathVariable Long userId,
                                                   @RequestParam(required = false) String status) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(userId);

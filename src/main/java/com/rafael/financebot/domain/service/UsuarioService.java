@@ -1,11 +1,9 @@
 package com.rafael.financebot.domain.service;
 
-import com.rafael.financebot.domain.exception.ConflitoStatus;
 import com.rafael.financebot.domain.exception.EntidadeNaoEncontrada;
 import com.rafael.financebot.domain.exception.PersistenciaDados;
 import com.rafael.financebot.domain.model.Conta;
 import com.rafael.financebot.domain.model.Usuario;
-import com.rafael.financebot.domain.repository.ContaRepository;
 import com.rafael.financebot.domain.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
