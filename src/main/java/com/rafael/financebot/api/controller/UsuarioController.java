@@ -121,6 +121,36 @@ public class UsuarioController {
                 .body(usuarioOptional.get());
     }
 
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> removerUsuario(@PathVariable Long userId) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(userId);
+
+        if(usuarioOptional.isEmpty()){
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        Usuario usuario = usuarioOptional.get();
+        List<Conta> contaList = usuario.getContasMensais();
+        if(contaList.size() != 0) {
+            for (Conta cadaConta : contaList) {
+                contaService.removerConta(cadaConta.getId());
+            }
+        }
+
+        try {
+            usuarioService.removerUsuario(usuario);
+
+            return ResponseEntity
+                    .ok(usuario);
+        }catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{userId}/delete")
     public ResponseEntity<?> deletarTodasContas(@PathVariable Long userId) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(userId);

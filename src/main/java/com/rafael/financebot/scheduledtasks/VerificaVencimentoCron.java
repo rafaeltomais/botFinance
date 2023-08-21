@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
 public class VerificaVencimentoCron {
 
     @Autowired
-    private EnviarMensagem messageSender;
+    private EnviarMensagem enviarMensagem;
 
     @Autowired
     UsuarioController usuarioController;
@@ -24,6 +25,7 @@ public class VerificaVencimentoCron {
     public void verificaVencimento() {
         LocalDate dataAtual = LocalDate.now();
         int diaDoMes = dataAtual.getDayOfMonth();
+        DayOfWeek diaSemana = dataAtual.getDayOfWeek();
 
         List<Usuario> usuarioList = usuarioController.listarUsuarios();
 
@@ -48,8 +50,13 @@ public class VerificaVencimentoCron {
                     boolean isDiaVencimento = (diaDoMes) == diaVencimento;
                     boolean isAmanhaVencimento = (diaDoMes + 1) == diaVencimento;
                     boolean isVencidaOntem = (diaDoMes - 1) == diaVencimento;
+                    boolean isVencidaAnteontem = (diaDoMes - 2) == diaVencimento;
 
                     if(contaEmAberto) {
+                        if(isVencidaAnteontem && diaSemana == DayOfWeek.MONDAY) {
+                            quantidadeContaAberto += 1;
+                            mensagemVencimento.append(String.format("Conta '%s' vencida sábado.\n", descricaoConta));
+                        }
                         if(isVencidaOntem && contaVencida) {
                             quantidadeContaAberto += 1;
                             mensagemVencimento.append(String.format("Conta '%s' vencida ontem.\n", descricaoConta));
@@ -66,7 +73,7 @@ public class VerificaVencimentoCron {
                 }
 
                 if(quantidadeContaAberto > 0){
-                    messageSender.sendMessage(chatId, String.valueOf(mensagemVencimento));
+                    enviarMensagem.sendMessage(chatId, String.valueOf(mensagemVencimento));
                 }
             }
         }
