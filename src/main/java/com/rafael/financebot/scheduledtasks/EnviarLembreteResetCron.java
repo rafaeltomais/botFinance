@@ -34,7 +34,7 @@ public class EnviarLembreteResetCron {
                 mensagemInicioMes.append("Bom dia, champs! 😉\n\nAproveite que o mês está começando e cadastre seus compromissos financeiros para não pagar nenhum juros! Te ajudo com avisos, mas o dinheiro é com você! 🤡");
             }
             else {
-                mensagemInicioMes.append("Bom dia, parça! 😉\n\nAgora que o mês está começando, não esqueça de resetar o status de todos os seus compromissos financeiros para eu te enviar notificação em cada vencimento! Assim você não paga nenhum juros! \n\n*Só ir no menu inicial e clicar em 'resetar todas as contas'.");
+                mensagemInicioMes.append("Bom dia, parça! 😉\n\nAgora que o mês está começando, não esqueça de resetar o status de todos os seus compromissos financeiros para eu te enviar notificação em cada vencimento! Assim você não paga nenhum juros! \n\n*No menu inicial escolha a opção 'Configurações' e clique em 'Resetar todas as contas'.");
             }
 
             enviarMensagem.sendMessage(chatId, String.valueOf(mensagemInicioMes));
