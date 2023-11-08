@@ -1,16 +1,16 @@
-FROM ubuntu:latest AS build
+# Etapa 1: Construção
+FROM maven:3.8.4-jdk-17 AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
+WORKDIR /app
 COPY . .
-
-RUN apt-get install maven -y
 RUN mvn clean install -DskipTests
 
+# Etapa 2: Imagem final
 FROM openjdk:17-jdk-slim
 
-EXPOSE 8080
+WORKDIR /app
+COPY --from=build /app/target/finance-bot-0.0.1-SNAPSHOT.jar app.jar
 
-COPY --from=build /target/finance-bot-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
