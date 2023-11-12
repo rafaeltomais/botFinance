@@ -13,7 +13,8 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 COPY --from=build /app/target/finance-bot-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE $PORT
+# Expondo porta configurável via variável de ambiente
+EXPOSE ${PORT}
 
 # Adicionando metadata
 LABEL version="1.0" \
